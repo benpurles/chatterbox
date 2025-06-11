@@ -1,117 +1,89 @@
+# Chatterbox AI Voice Cloner
 
-<img width="1200" alt="cb-big2" src="https://github.com/user-attachments/assets/bd8c5f03-e91d-4ee5-b680-57355da204d1" />
+A web-based interface for the Chatterbox TTS voice cloning system. This application allows users to upload voice samples and generate speech with cloned voices.
 
-# Chatterbox TTS
+## Features
 
-[![Alt Text](https://img.shields.io/badge/listen-demo_samples-blue)](https://resemble-ai.github.io/chatterbox_demopage/)
-[![Alt Text](https://huggingface.co/datasets/huggingface/badges/resolve/main/open-in-hf-spaces-sm.svg)](https://huggingface.co/spaces/ResembleAI/Chatterbox)
-[![Alt Text](https://static-public.podonos.com/badges/insight-on-pdns-sm-dark.svg)](https://podonos.com/resembleai/chatterbox)
-[![Discord](https://img.shields.io/discord/1377773249798344776?label=join%20discord&logo=discord&style=flat)](https://discord.gg/rJq9cRJBJ6)
+- 🎙️ **Voice Upload**: Upload audio files to create voice profiles
+- ✍️ **Text-to-Speech**: Convert any text to speech using cloned voices
+- 🎭 **Voice Library**: Manage multiple voice profiles
+- ⚙️ **Advanced Settings**: Control emotion, variation, and other voice parameters
+- 🔊 **Audio Playback**: Listen to generated speech directly in the browser
+- 📱 **Responsive Design**: Works on desktop and mobile devices
 
-_Made with ♥️ by <a href="https://resemble.ai" target="_blank"><img width="100" alt="resemble-logo-horizontal" src="https://github.com/user-attachments/assets/35cf756b-3506-4943-9c72-c05ddfa4e525" /></a>
+## Current Status
 
-We're excited to introduce Chatterbox, [Resemble AI's](https://resemble.ai) first production-grade open source TTS model. Licensed under MIT, Chatterbox has been benchmarked against leading closed-source systems like ElevenLabs, and is consistently preferred in side-by-side evaluations.
+This is a **frontend interface** that demonstrates the user experience for voice cloning. To make it fully functional, you'll need to:
 
-Whether you're working on memes, videos, games, or AI agents, Chatterbox brings your content to life. It's also the first open source TTS model to support **emotion exaggeration control**, a powerful feature that makes your voices stand out. Try it now on our [Hugging Face Gradio app.](https://huggingface.co/spaces/ResembleAI/Chatterbox)
+1. **Set up the Python backend** with the Chatterbox dependencies
+2. **Integrate the Python models** with the web interface
+3. **Configure audio processing** for real-time generation
 
-If you like the model but need to scale or tune it for higher accuracy, check out our competitively priced TTS service (<a href="https://resemble.ai">link</a>). It delivers reliable performance with ultra-low latency of sub 200ms—ideal for production use in agents, applications, or interactive media.
+## Quick Start
 
-# Key Details
-- SoTA zeroshot TTS
-- 0.5B Llama backbone
-- Unique exaggeration/intensity control
-- Ultra-stable with alignment-informed inference
-- Trained on 0.5M hours of cleaned data
-- Watermarked outputs
-- Easy voice conversion script
-- [Outperforms ElevenLabs](https://podonos.com/resembleai/chatterbox)
-
-# Tips
-- **General Use (TTS and Voice Agents):**
-  - The default settings (`exaggeration=0.5`, `cfg_weight=0.5`) work well for most prompts.
-  - If the reference speaker has a fast speaking style, lowering `cfg_weight` to around `0.3` can improve pacing.
-
-- **Expressive or Dramatic Speech:**
-  - Try lower `cfg_weight` values (e.g. `~0.3`) and increase `exaggeration` to around `0.7` or higher.
-  - Higher `exaggeration` tends to speed up speech; reducing `cfg_weight` helps compensate with slower, more deliberate pacing.
-
-
-# Installation
-```shell
-pip install chatterbox-tts
+1. Install dependencies:
+```bash
+npm install
 ```
 
-Alternatively, you can install from source:
-```shell
-# conda create -yn chatterbox python=3.11
-# conda activate chatterbox
-
-git clone https://github.com/resemble-ai/chatterbox.git
-cd chatterbox
-pip install -e .
-```
-We developed and tested Chatterbox on Python 3.11 on Debain 11 OS; the versions of the dependencies are pinned in `pyproject.toml` to ensure consistency. You can modify the code or dependencies in this installation mode.
-
-
-# Usage
-```python
-import torchaudio as ta
-from chatterbox.tts import ChatterboxTTS
-
-model = ChatterboxTTS.from_pretrained(device="cuda")
-
-text = "Ezreal and Jinx teamed up with Ahri, Yasuo, and Teemo to take down the enemy's Nexus in an epic late-game pentakill."
-wav = model.generate(text)
-ta.save("test-1.wav", wav, model.sr)
-
-# If you want to synthesize with a different voice, specify the audio prompt
-AUDIO_PROMPT_PATH = "YOUR_FILE.wav"
-wav = model.generate(text, audio_prompt_path=AUDIO_PROMPT_PATH)
-ta.save("test-2.wav", wav, model.sr)
-```
-See `example_tts.py` and `example_vc.py` for more examples.
-
-# Supported Lanugage
-Currenlty only English.
-
-# Acknowledgements
-- [Cosyvoice](https://github.com/FunAudioLLM/CosyVoice)
-- [Real-Time-Voice-Cloning](https://github.com/CorentinJ/Real-Time-Voice-Cloning)
-- [HiFT-GAN](https://github.com/yl4579/HiFTNet)
-- [Llama 3](https://github.com/meta-llama/llama3)
-- [S3Tokenizer](https://github.com/xingchensong/S3Tokenizer)
-
-# Built-in PerTh Watermarking for Responsible AI
-
-Every audio file generated by Chatterbox includes [Resemble AI's Perth (Perceptual Threshold) Watermarker](https://github.com/resemble-ai/perth) - imperceptible neural watermarks that survive MP3 compression, audio editing, and common manipulations while maintaining nearly 100% detection accuracy.
-
-
-## Watermark extraction
-
-You can look for the watermark using the following script.
-
-```python
-import perth
-import librosa
-
-AUDIO_PATH = "YOUR_FILE.wav"
-
-# Load the watermarked audio
-watermarked_audio, sr = librosa.load(AUDIO_PATH, sr=None)
-
-# Initialize watermarker (same as used for embedding)
-watermarker = perth.PerthImplicitWatermarker()
-
-# Extract watermark
-watermark = watermarker.get_watermark(watermarked_audio, sample_rate=sr)
-print(f"Extracted watermark: {watermark}")
-# Output: 0.0 (no watermark) or 1.0 (watermarked)
+2. Start the development server:
+```bash
+npm start
 ```
 
+3. Open your browser to `http://localhost:3000`
 
-# Official Discord
+## Integration with Chatterbox
 
-👋 Join us on [Discord](https://discord.gg/rJq9cRJBJ6) and let's build something awesome together!
+To integrate with the actual Chatterbox TTS system:
 
-# Disclaimer
-Don't use this model to do bad things. Prompts are sourced from freely available data on the internet.
+1. **Install Python dependencies** from the original repository
+2. **Create a Python API server** that wraps the Chatterbox models
+3. **Update the `/generate-speech` endpoint** to call the Python backend
+4. **Handle audio file processing** and return generated audio files
+
+## File Structure
+
+```
+├── public/
+│   ├── index.html      # Main HTML interface
+│   ├── styles.css      # Styling and responsive design
+│   └── script.js       # Frontend JavaScript logic
+├── server.js           # Express.js server
+├── package.json        # Node.js dependencies
+└── README.md          # This file
+```
+
+## API Endpoints
+
+- `POST /upload-voice` - Upload voice sample files
+- `GET /voice-files` - Get list of uploaded voices
+- `POST /generate-speech` - Generate speech (placeholder)
+- `GET /uploads/:filename` - Serve uploaded audio files
+
+## Next Steps
+
+1. **Python Integration**: Set up a Python subprocess or API to handle TTS generation
+2. **Audio Processing**: Implement proper audio format handling and conversion
+3. **Real-time Features**: Add streaming audio generation for longer texts
+4. **Voice Management**: Add features to delete, rename, and organize voices
+5. **Export Options**: Add different audio format export options
+
+## Technologies Used
+
+- **Frontend**: HTML5, CSS3, JavaScript (ES6+)
+- **Backend**: Node.js, Express.js
+- **File Upload**: Multer
+- **Audio**: HTML5 Audio API
+- **Styling**: Custom CSS with modern design principles
+
+## Browser Support
+
+- Chrome/Chromium 80+
+- Firefox 75+
+- Safari 13+
+- Edge 80+
+
+## Contributing
+
+This interface is designed to work with the Chatterbox TTS system. For the core TTS functionality, refer to the original Chatterbox repository.
